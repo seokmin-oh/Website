@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4INLAB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-color: #111111;
+            --text-color: #ffffff;
+            --secondary-text-color: #999999;
+            --highlight-color: #ffffff; /* Highlight color for new words */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                rgba(0, 0, 0, 0.7),
+                rgba(0, 0, 0, 0.9)
+            );
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 0;
+            z-index: 1000;
+            background: transparent;
+            transition: background 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .menu-btn {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 300;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 1; /* 0에서 1로 변경 */
+            transform: translateY(0); /* 20px에서 0으로 변경 */
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .hero-title {
+            font-size: 6.5em;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .hero-title span {
+            color: var(--secondary-text-color);
+            font-weight: 100;
+        }
+
+        .highlight {
+            font-family: 'Permanent Marker', cursive;
+            position: relative;
+            display: inline-block;
+            min-width: 250px;
+            text-align: left;
+            color: var(--highlight-color);
+        }
+
+        .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background-color: var(--highlight-color);
+            transition: width 0.5s ease;
+        }
+
+        .highlight.active::after {
+            width: 100%;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .highlight.fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .hero-description {
+            max-width: 500px;
+            font-size: 1em;
+            color: var(--secondary-text-color);
+            margin-top: 20px;
+        }
+
+        .view-more-btn {
+            display: inline-block;
+            padding: 10px 25px;
+            background-color: transparent;
+            color: var(--text-color);
+            text-decoration: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--text-color);
+            border-radius: 25px;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .view-more-btn:hover {
+            background-color: var(--text-color);
+            color: var(--background-color);
+        }
+
+        .hero-title, .hero-description {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+
+
+        .view-more-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .scroll-icon svg path {
+            stroke: rgba(255, 255, 255, 0.9); /* 더 밝은 색상 */
+        }
+
+        .scroll-icon {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .projects {
+            display: flex;
+            background-color: rgba(17, 17, 17, 0.5); /* 더 투명한 배경 */
+            flex-wrap: wrap;
+            justify-content: space-between;
+            padding: 50px 10%;
+            border-top: 1px solid #333;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .project-item {
+            flex: 1 1 calc(25% - 20px);
+            margin: 10px;
+            text-align: center;
+        }
+
+        .project-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .project-item h3 {
+            margin-top: 10px;
+            font-size: 1.2em;
+            font-weight: 400;
+        }
+
+        .project-item p {
+            color: var(--secondary-text-color);
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .project-item .view-more-btn {
+            font-size: 0.8em;
+            padding: 5px 15px;
+        }
+
+        .active-section {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .scroll-animate.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .projects {
+            display: flex;
+            background-color: rgba(17, 17, 17, 0.5);
+            flex-wrap: wrap;
+            justify-content: space-between;
+            padding: 50px 10%;
+            border-top: 1px solid #333;
+        }
+
+        .project-item {
+            flex: 1 1 calc(33.333% - 20px);
+            margin: 10px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .project-item.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .footer {
+        background-color: rgba(0, 0, 0, 0.8); /* 배경을 더 어둡게 만듭니다 */
+        color: #ffffff;
+        padding: 40px 0;
+        font-size: 0.9em;
+        border-top: 1px solid rgba(255, 255, 255, 0.1); /* footer를 구분하는 선을 추가합니다 */
+    }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-logo {
+            flex: 1;
+            text-align: left;
+        }
+
+        .footer-logo img {
+            width: 150px;
+            height: auto;
+        }
+
+        .footer-info {
+            flex: 2;
+            text-align: right;
+        }
+
+        .footer-contact {
+            margin-bottom: 20px;
+        }
+
+        .footer-contact a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .footer-locations {
+            margin-bottom: 20px;
+        }
+
+        .footer-locations p {
+            margin: 5px 0;
+        }
+
+        .footer-copyright {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            text-align: center;
+            font-size: 0.8em;
+            color: #999;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3em;
+            }
+            .projects {
+                flex-direction: column;
+            }
+            .project-item {
+                flex: 1 1 100%;
+                margin: 10px 0;
+            }
+        }
+            .footer-content {
+            flex-direction: column;
+            align-items: center;
+        }
+
+            .footer-logo, .footer-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+
+    </style>
+</head>
+<body>
+        
+<!--HTML 구간-->
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">4INLAB</div>
+            <a href="#" class="menu-btn">MENU</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="hero">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        WE <span>MAKING</span> AI <br> FOR <span class="highlight changing-word"></span>.
+                    </h1>
+                    <p class="hero-description">우리는 제조 현장을 통찰력있게 봅니다.<br>
+                    누구도 안 된다고 말할 때, 우리는 가능성을 향해<br>
+                    대담하게 도전하며, 넓은 견해로 바라보고<br>
+                    우리를 위한, 모두를 위한 인공지능 서비스를 만듭니다.</p>
+                    <a href="#" class="view-more-btn">View More</a>
+                </div>
+            </section>
+
+            <div class="scroll-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 5V19M12 19L19 12M12 19L5 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </div>
+
+        <section class="projects scroll-animate">
+            <div class="project-item">
+                <img src="objectdetection.png" alt="Project 1">
+                <h3>For Product</h3>
+                <p>문구 추가 예정</p>
+                <a href="#" class="view-more-btn">View More</a>
+            </div>
+            <div class="project-item">
+                <img src="safety.png" alt="Project 2">
+                <h3>For Safety</h3>
+                <p>안전관리 문구 추가</p>
+                <a href="#" class="view-more-btn">View More</a>
+            </div>
+            <div class="project-item">
+                <img src="quality.png" alt="Project 3">
+                <h3>For Quality</h3>
+                <p>품질검사 문구 추가</p>
+                <a href="#" class="view-more-btn">View More</a>
+            </div>
+        </section>
+
+        <section class="projects scroll-animate">
+            <div class="project-item">
+                <h3>추가 예정</h3>
+                <p>Another Project Description</p>
+            </div>
+
+        </section>
+
+        <section class="solutions-section scroll-animate">
+            <div class="container">
+                <h2 class="solutions-title">4INLAB AI Solution</h2>
+                <p class="solutions-description">제조 AI 및 자율공장 서비스 선도기업 4INLAB이 빅데이터 분석과 인공지능을 기반으로 제조 공정 최적화 기술과 자율공장 운영 서비스를 제공합니다</p>
+                <div class="solutions-grid">
+                    <div class="solution-item">
+                        <img src="recipe.jpg" alt="Recipe.AI">
+                        <div class="solution-overlay">
+                            <h3>Recipe.AI</h3>
+                            <p>최적의 제조 레시피 도출</p>
+                        </div>
+                    </div>
+                    <div class="solution-item">
+                        <img src="inspection.jpg" alt="Inspection.AI">
+                        <div class="solution-overlay">
+                            <h3>Inspection.AI</h3>
+                            <p>AI 기반 품질 검사</p>
+                        </div>
+                    </div>
+                    <div class="solution-item">
+                        <img src="quality.jpg" alt="Quality.AI">
+                        <div class="solution-overlay">
+                            <h3>Quality.AI</h3>
+                            <p>품질 예측 및 관리</p>
+                        </div>
+                    </div>
+                    <div class="solution-item">
+                        <img src="safety.jpg" alt="Safety.AI">
+                        <div class="solution-overlay">
+                            <h3>Safety.AI</h3>
+                            <p>작업자 안전 모니터링</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="projects scroll-animate">
+            <div class="project-item">
+                <img src="/mnt/data/20202020062005700740989571.jpg" alt="Project 5">
+                <h3>Project 5</h3>
+                <p>Another Project Description</p>
+                <a href="#" class="view-more-btn">View More</a>
+            </div>
+            <div class="project-item">
+                <img src="/mnt/data/20242024050148668180660881.jpg" alt="Project 6">
+                <h3>Project 6</h3>
+                <p>Yet Another Project Description</p>
+                <a href="#" class="view-more-btn">View More</a>
+            </div>
+        </section>
+    </main>
+    <footer>
+    <section>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="4inlab-logo.png" alt="4INLAB Logo">
+            </div>
+            <div class="footer-info">
+                <div class="footer-contact">
+                    <p>E-mail : <a href="mailto:info@4inlab.com">smoh@4inlab.kr</a></p>
+                    <p>TEL : +82-10-3340-3085</p>
+                </div>
+                <div class="footer-locations">
+                    <p>경남 창원시 마산합포구 3·15대로 298, 203호 (우)51734</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <p>Copyright © 2024 4INLAB. All rights reserved.</p>
+        </div>
+    </section>
+</footer>
+<!--HTML 구간-->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const heroContent = document.querySelector('.hero-content');
+            heroContent.classList.add('active-section');
+        });
+
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            const scrollAnimateElements = document.querySelectorAll('.scroll-animate');
+            const projectItems = document.querySelectorAll('.project-item');
+            
+            if (window.scrollY > 50) {
+                header.style.backgroundColor = 'rgba(17, 17, 17, 0.8)';
+            } else {
+                header.style.backgroundColor = 'transparent';
+            }
+
+            scrollAnimateElements.forEach((element) => {
+                if (window.scrollY > (element.offsetTop - window.innerHeight + 100)) {
+                    element.classList.add('active');
+                }
+            });
+
+            projectItems.forEach((item, index) => {
+                if (window.scrollY > (item.offsetTop - window.innerHeight + 100)) {
+                    setTimeout(() => {
+                        item.classList.add('active');
+                    }, index * 200); // 각 항목마다 200ms 지연
+                }
+            });
+        });
+
+        const words = ['INDUSTRIAL', 'INOVATION', 'EVERYONE'];
+        let currentIndex = 0;
+        const changingWord = document.querySelector('.changing-word');
+
+        function changeWord() {
+            changingWord.classList.remove('active');
+            setTimeout(() => {
+                changingWord.textContent = words[currentIndex];
+                changingWord.classList.add('fade-in', 'active');
+                currentIndex = (currentIndex + 1) % words.length;
+            }, 800);
+        }
+
+        setInterval(changeWord, 3000);
+        changeWord(); // 초기 단어 표시
+    </script>
+</body>
+</html>
